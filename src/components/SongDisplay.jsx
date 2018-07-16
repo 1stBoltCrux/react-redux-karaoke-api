@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { nextLyric } from './../actions';
 import { connect } from 'react-redux';
+import { restartSong } from './../actions';
 
 const SongDisplay = ({ dispatch, song }) => {
   const { title, artist, songArray, arrayPosition, id } = song;
@@ -14,17 +16,9 @@ const SongDisplay = ({ dispatch, song }) => {
       <div onClick={e => {
         e.preventDefault();
         if(!(arrayPosition === songArray.length - 1)) {
-          action = {
-            type: 'NEXT_LYRIC',
-            currentSongId: id
-          };
-          dispatch(action);
+      dispatch(nextLyric(id));
         } else {
-          action = {
-            type: 'RESTART_SONG',
-            currentSongId: id
-          };
-          dispatch(action);
+          dispatch(restartSong(id));
         }
       }}>
         <h1>
@@ -46,16 +40,27 @@ SongDisplay.propTypes = {
 };
 
 const mapStateToProps = state => {
+  let info;
   const song = state.songsById[state.currentSongId];
-  const songInfo = {
-    id: song.songId,
-    artist: song.artist,
-    title: song.title,
-    songArray: song.songArray,
-    arrayPosition: song.arrayPosition
+  if(!state.songsById[state.currentSongId].isFetching) {
+    info = {
+      id: song.songId,
+      artist: song.artist,
+      title: song.title,
+      songArray: song.songArray,
+      arrayPosition: song.arrayPosition
+    };
+
+  } else {
+    info = {
+      artist:'',
+    title: '',
+    songArray: '',
+    arrayPosition: ''
   };
+  }
   return {
-    song: songInfo
+    song: info
   };
 };
 
